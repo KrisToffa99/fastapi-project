@@ -6,7 +6,6 @@ from api.db.schemas import Book, Genre, InMemoryDB
 router = APIRouter()
 db = InMemoryDB()
 
-# Initialize with sample books
 db.books = {
     1: Book(
         id=1,
@@ -31,12 +30,10 @@ db.books = {
     ),
 }
 
-# GET all books
 @router.get("/", response_model=OrderedDict[int, Book], status_code=status.HTTP_200_OK)
 async def get_books() -> OrderedDict[int, Book]:
     return db.get_books()
 
-# GET single book by ID
 @router.get("/{book_id}", response_model=Book, status_code=status.HTTP_200_OK)
 async def get_book(book_id: int):
     book = db.get_book(book_id)
@@ -50,7 +47,6 @@ async def get_book(book_id: int):
         content=book.model_dump()
     )
 
-# POST create new book
 @router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_book(book: Book):
     db.add_book(book)
@@ -59,7 +55,6 @@ async def create_book(book: Book):
         content=book.model_dump()
     )
 
-# PUT update book
 @router.put("/{book_id}", response_model=Book, status_code=status.HTTP_200_OK)
 async def update_book(book_id: int, book: Book) -> Book:
     return JSONResponse(
@@ -67,7 +62,6 @@ async def update_book(book_id: int, book: Book) -> Book:
         content=db.update_book(book_id, book).model_dump(),
     )
 
-# DELETE book
 @router.delete("/{book_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_book(book_id: int) -> None:
     db.delete_book(book_id)
