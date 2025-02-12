@@ -1,0 +1,23 @@
+name: CD
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Build Docker image
+      run: docker build -t fastapi-app .
+      
+    - name: Log in to GitHub Container Registry
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      
+    - name: Push to GitHub Container Registry
+      run: |
+        docker tag fastapi-app ghcr.io/${{ github.repository }}/fastapi-app:latest
+        docker push ghcr.io/${{ github.repository }}/fastapi-app:latest
